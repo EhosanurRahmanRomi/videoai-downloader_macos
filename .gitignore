@@ -1,0 +1,13 @@
+node_modules/
+.devtools/
+release/
+dist/
+*.log
+resources/toolchain/*.exe
+resources/toolchain/*.dll
+resources/toolchain/yt-dlp
+resources/toolchain/ffmpeg
+resources/toolchain/ffprobe
+resources/toolchain/aria2c
+resources/toolchain/tools-manifest.json
+!resources/toolchain/.gitkeep

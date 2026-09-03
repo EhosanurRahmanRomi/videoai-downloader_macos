@@ -1,0 +1,93 @@
+{
+  "name": "videoai-downloader",
+  "version": "2.1.0",
+  "description": "Fast, reliable desktop video and playlist downloader powered by yt-dlp.",
+  "main": "src/main.js",
+  "author": "VideoAI Downloader",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test --test-reporter=spec test/*.test.js",
+    "test:integration": "npm run tools:integration && node scripts/integration-smoke.js",
+    "check": "node --check src/main.js && node --check src/preload.js && node --check src/renderer/app.js && node --test --test-reporter=spec test/*.test.js",
+    "icon:generate": "node scripts/generate-icon.js",
+    "tools:manifest": "node scripts/generate-tool-manifest.js",
+    "tools:integration": "node scripts/fetch-integration-tool.js",
+    "tools:mac": "node scripts/fetch-tools-macos.js",
+    "installer:win": "node scripts/build-installer.js",
+    "verify:release": "node scripts/verify-release.js",
+    "verify:mac": "node scripts/verify-macos-release.js",
+    "archive:mac": "node scripts/package-macos-zip.js",
+    "pack:win": "electron-builder --win dir --x64",
+    "dist:win": "npm run check && electron-builder --win dir --x64 && npm run installer:win && electron-builder --win portable --x64 && npm run verify:release",
+    "pack:mac": "npm run tools:mac && electron-builder --mac dir --arm64",
+    "dist:mac": "npm run check && npm run tools:mac && electron-builder --mac dir --arm64 && npm run archive:mac && npm run verify:mac"
+  },
+  "build": {
+    "appId": "com.videoai.downloader",
+    "productName": "VideoAI Downloader",
+    "artifactName": "VideoAI-Downloader-${version}-${arch}-Portable.${ext}",
+    "asar": true,
+    "asarUnpack": [],
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "afterPack": "scripts/after-pack.js",
+    "files": [
+      "src/**/*",
+      "build/icon.png",
+      "build/icon.ico",
+      "package.json",
+      "README.md",
+      "MACOS_INSTALL.md",
+      "LICENSE",
+      "THIRD_PARTY_NOTICES.md"
+    ],
+    "extraResources": [
+      {
+        "from": "resources/toolchain",
+        "to": "bin",
+        "filter": ["**/*"]
+      },
+      {
+        "from": "resources/licenses",
+        "to": "licenses",
+        "filter": ["**/*"]
+      }
+    ],
+    "win": {
+      "icon": "build/icon.ico",
+      "signAndEditExecutable": false,
+      "target": [
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
+      ],
+      "verifyUpdateCodeSignature": false
+    },
+    "mac": {
+      "icon": "build/icon.png",
+      "category": "public.app-category.utilities",
+      "minimumSystemVersion": "13.0.0",
+      "artifactName": "VideoAI-Downloader-${version}-macOS-${arch}.${ext}",
+      "target": [
+        {
+          "target": "zip",
+          "arch": ["arm64"]
+        }
+      ]
+    },
+    "portable": {
+      "artifactName": "VideoAI-Downloader-${version}-${arch}-Portable.${ext}",
+      "requestExecutionLevel": "user"
+    }
+  },
+  "devDependencies": {
+    "electron": "44.1.1",
+    "electron-builder": "26.15.3",
+    "linkedom": "^0.18.13"
+  }
+}
